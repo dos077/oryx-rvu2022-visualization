@@ -3,14 +3,21 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "vue-cli-service serve --port 7070",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "getimgs": "node src/downloadImg",
+    "getdata": "node src/scrap",
+    "ocr": "python3 postimg_ocr.py",
+    "validate": "node src/validate"
   },
   "dependencies": {
+    "chart.js": "^3.7.1",
     "core-js": "^3.8.3",
+    "puppeteer": "^13.5.1",
     "vue": "^2.6.14",
     "vue-router": "^3.5.1",
+    "vuetify": "^2.6.0",
     "vuex": "^3.6.2"
   },
   "devDependencies": {
@@ -26,6 +33,10 @@
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-vue": "^8.0.3",
     "eslint-plugin-vuejs-accessibility": "^1.1.0",
-    "vue-template-compiler": "^2.6.14"
+    "sass": "~1.32.0",
+    "sass-loader": "^10.0.0",
+    "vue-cli-plugin-vuetify": "~2.4.8",
+    "vue-template-compiler": "^2.6.14",
+    "vuetify-loader": "^1.7.0"
   }
 }

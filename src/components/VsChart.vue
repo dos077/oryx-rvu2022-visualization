@@ -1,0 +1,103 @@
+<template>
+  <main-card title="Chart" :noNav="true" titleColor="" style="min-width: 100%;">
+    <v-card-text>
+      <canvas id="vsChart"></canvas>
+    </v-card-text>
+    <v-footer>
+      <v-spacer />
+      <span class="caption">updated {{ updateTime }}</span>
+    </v-footer>
+  </main-card>
+</template>
+
+<script>
+import Chart from 'chart.js/auto';
+import { mapState } from 'vuex';
+import MainCard from './MainCard.vue';
+import { mapSideDates, updated } from '../data/oryxDb';
+import { buildVsData } from '../data/chartData';
+
+export default {
+  name: 'VsChart',
+  components: { MainCard },
+  data: () => ({
+    chart: null,
+    updated: new Date(updated),
+  }),
+  computed: {
+    ...mapState(['entries', 'countMethod', 'smaPeriod']),
+    isTotal() {
+      return this.countMethod === 'total';
+    },
+    chartData() {
+      const mapped = mapSideDates(this.entries);
+      const {
+        labels, russia, ukraine, rusSma, ukrSma,
+      } = buildVsData(mapped, this.isTotal, this.smaPeriod);
+      const datasets = [];
+      if (!this.isTotal) {
+        datasets.push(
+          {
+            label: 'Rus-SMA',
+            data: rusSma,
+            borderColor: '#f99fa8',
+            borderDash: [5, 5],
+            cubicInterpolationMode: 'monotone',
+            tension: 0.4,
+          },
+          {
+            label: 'Ukr - SMA',
+            data: ukrSma,
+            borderColor: '#66b0ff ',
+            borderDash: [5, 5],
+            cubicInterpolationMode: 'monotone',
+            tension: 0.4,
+          },
+        );
+      }
+      datasets.push(
+        {
+          label: 'Russia',
+          data: russia,
+          borderColor: '#DB0D20',
+          backgroundColor: '#db0d20',
+          type: this.isTotal ? 'line' : 'bar',
+          cubicInterpolationMode: 'monotone',
+          tension: 0.4,
+        },
+        {
+          label: 'Ukraine',
+          data: ukraine,
+          borderColor: '#005BBB ',
+          backgroundColor: '#005BBB ',
+          type: this.isTotal ? 'line' : 'bar',
+          cubicInterpolationMode: 'monotone',
+          tension: 0.4,
+        },
+      );
+      return { labels, datasets };
+    },
+    updateTime() {
+      const ts = this.updated;
+      const date = `${ts.getFullYear()}-${ts.getMonth() + 1}-${ts.getDate()}`;
+      const hr = `${ts.getHours()}:${ts.getMinutes()}`;
+      return `${date} ${hr}`;
+    },
+  },
+  watch: {
+    chartData: {
+      handler(newData) {
+        this.chart.data = newData;
+        this.chart.update();
+      },
+    },
+  },
+  mounted() {
+    const ctx = document.getElementById('vsChart');
+    this.chart = new Chart(ctx, {
+      type: 'line',
+      data: this.chartData,
+    });
+  },
+};
+</script>

@@ -2,12 +2,13 @@
   <main-container>
     <template v-slot:secondary>
       <main-card
-        title="Filters"
+        title="Russian Invasion of Ukraine 2022"
         titleColor="grey lighten-2"
         style="min-width: 100%;"
         class="my-4" :noNav="true"
       >
-        <v-expansion-panels accordion multiple>
+        <v-expansion-panels accordion multiple v-model="openPanels">
+          <info-panel />
           <categories-picker />
           <models-picker />
           <graph-config />
@@ -28,6 +29,7 @@ import CategoriesPicker from '../components/CategoriesPicker.vue';
 import ModelsPicker from '../components/ModelsPicker.vue';
 import GraphConfig from '../components/GraphConfig.vue';
 import VsChart from '../components/VsChart.vue';
+import InfoPanel from '../components/InfoPanel.vue';
 
 export default {
   name: 'VsView',
@@ -38,8 +40,10 @@ export default {
     ModelsPicker,
     GraphConfig,
     VsChart,
+    InfoPanel,
   },
   data: () => ({
+    openPanels: [0],
   }),
   computed: {
     ...mapState(['entries']),

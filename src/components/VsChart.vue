@@ -5,7 +5,9 @@
     </v-card-text>
     <v-footer>
       <v-spacer />
-      <span class="caption">updated {{ updateTime }}</span>
+      <span class="caption">
+        last update <b>{{ updateTime }}</b>
+      </span>
     </v-footer>
   </main-card>
 </template>
@@ -25,12 +27,19 @@ export default {
     updated: new Date(updated),
   }),
   computed: {
-    ...mapState(['entries', 'countMethod', 'smaPeriod']),
+    ...mapState(['entries', 'countMethod', 'smaPeriod', 'dateRange']),
     isTotal() {
       return this.countMethod === 'total';
     },
     chartData() {
-      const mapped = mapSideDates(this.entries);
+      const minDate = new Date(this.dateRange[0]);
+      const maxDate = new Date(this.dateRange[1]);
+      maxDate.setDate(maxDate.getDate() + 1);
+      const entries = this.entries.filter(({ date }) => {
+        const time = new Date(date);
+        return time >= minDate && time <= maxDate;
+      });
+      const mapped = mapSideDates(entries);
       const {
         labels, russia, ukraine, rusSma, ukrSma,
       } = buildVsData(mapped, this.isTotal, this.smaPeriod);

@@ -11,8 +11,9 @@ export default new Vuex.Store({
     categories: getCategories(),
     models: getModels(),
     entries: [...oryxDb],
-    countMethod: 'total',
+    countMethod: 'daily',
     smaPeriod: 3,
+    dateRange: ['2022-02-24', (new Date()).toISOString().substr(0, 10)],
   },
   mutations: {
     addCategory(state, toAdd) {
@@ -60,6 +61,9 @@ export default new Vuex.Store({
     },
     setSmaPeriod(state, val) {
       state.smaPeriod = val;
+    },
+    setDateRange(state, val) {
+      state.dateRange = val;
     },
   },
   actions: {

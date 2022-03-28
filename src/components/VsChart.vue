@@ -92,6 +92,7 @@ export default {
       const hr = `${ts.getHours()}:${ts.getMinutes()}`;
       return `${date} ${hr}`;
     },
+    isDesktop() { return this.$vuetify.breakpoint.mdAndUp; },
   },
   watch: {
     chartData: {
@@ -107,6 +108,12 @@ export default {
       type: 'line',
       data: this.chartData,
     });
+    if (!this.isDesktop) {
+      const maxDate = this.dateRange[1];
+      const minTs = new Date(maxDate) - (14 * 24 * 3600 * 1000);
+      const minDate = (new Date(minTs)).toISOString().substring(0, 10);
+      this.$store.commit('setDateRange', [minDate, maxDate]);
+    }
   },
 };
 </script>

@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import oryxDb, { getCategories, getModels } from '../data/oryxDb';
+import oryxDb, { getCategories, getModels, updated } from '../data/oryxDb';
 
 Vue.use(Vuex);
 
@@ -9,11 +9,12 @@ export default new Vuex.Store({
     db: oryxDb,
     filters: [],
     categories: getCategories(),
+    statuses: ['destroyed', 'damaged', 'captured', 'abandoned'],
     models: getModels(),
     entries: [...oryxDb],
     countMethod: 'daily',
     smaPeriod: 3,
-    dateRange: ['2022-02-24', (new Date()).toISOString().substr(0, 10)],
+    dateRange: ['2022-02-24', (new Date(updated)).toISOString().substr(0, 10)],
   },
   mutations: {
     addCategory(state, toAdd) {
@@ -31,19 +32,29 @@ export default new Vuex.Store({
         });
       }
     },
+    clearCategory(state) {
+      state.categories = [];
+    },
     addModel(state, toAdd) {
       if (!state.models.includes(toAdd)) state.models.push(toAdd);
     },
     removeModel(state, toRemove) {
       state.models = state.models.filter((model) => model !== toRemove);
     },
+    addStatus(state, toAdd) {
+      if (!state.statuses.includes(toAdd)) state.statuses.push(toAdd);
+    },
+    removeStatus(state, toRemove) {
+      state.statuses = state.statuses.filter((status) => status !== toRemove);
+    },
     updateEntries(state) {
       const entries = [];
-      const { categories, models } = state;
+      const { categories, models, statuses } = state;
       oryxDb.forEach((entry) => {
         if (
           categories.includes(entry.category)
           && models.includes(entry.model)
+          && statuses.includes(entry.status)
         ) entries.push(entry);
       });
       state.entries = entries;

@@ -1,7 +1,7 @@
 <template>
   <v-expansion-panel key="Categories">
     <v-expansion-panel-header>
-      Project Infos
+      Project Info
     </v-expansion-panel-header>
     <v-expansion-panel-content>
       <p>
@@ -20,6 +20,51 @@
         </a>
       </p>
       <p>Readme coming soon...</p>
+      <p>
+        A few presets for quick breakdowns according to military bracnhes
+      </p>
+      <p>
+        <v-btn @click="armourPreset" class="mx-2">Armours</v-btn>
+        <v-btn @click="artilleryPreset" class="mx-2">Artilleries</v-btn>
+        <v-btn @click="airPreset" class="mx-2">Air & Anti-Air</v-btn>
+        <v-btn @click="logiPreset" class="mx-2">Logistics</v-btn>
+      </p>
     </v-expansion-panel-content>
   </v-expansion-panel>
 </template>
+
+<script>
+export default {
+  name: 'InfoPanel',
+  methods: {
+    armourPreset() {
+      this.$store.commit('clearCategory');
+      ['Tanks', 'Armoured Fighting Vehicles', 'Infantry Fighting Vehicles', 'Armoured Personnel Carriers'].forEach((cat) => {
+        this.$store.commit('addCategory', cat);
+      });
+      this.$store.commit('updateEntries');
+    },
+    artilleryPreset() {
+      this.$store.commit('clearCategory');
+      ['Towed Artillery', 'Self-Propelled Artillery', 'Multiple Rocket Launchers'].forEach((cat) => {
+        this.$store.commit('addCategory', cat);
+      });
+      this.$store.commit('updateEntries');
+    },
+    airPreset() {
+      this.$store.commit('clearCategory');
+      ['Surface-To-Air Missile Systems', 'Radars', 'Aircraft', 'Helicopters'].forEach((cat) => {
+        this.$store.commit('addCategory', cat);
+      });
+      this.$store.commit('updateEntries');
+    },
+    logiPreset() {
+      this.$store.commit('clearCategory');
+      ['Logistics Trains', 'Trucks, Vehicles and Jeeps', 'Engineering Vehicles'].forEach((cat) => {
+        this.$store.commit('addCategory', cat);
+      });
+      this.$store.commit('updateEntries');
+    },
+  },
+};
+</script>

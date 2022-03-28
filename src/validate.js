@@ -2,13 +2,19 @@ const fs = require('fs');
 
 const indexJson = JSON.parse(fs.readFileSync('./src/oryxdata/index.json'));
 
+const statuses = ['destroyed', 'damaged', 'captured', 'abandoned'];
+
 const checkCounts = (index) => {
   ['Russia', 'Ukraine'].forEach((side) => {
     Object.keys(index[side]).forEach((category) => {
-      index[side][category].forEach(({ n, model, imgs }) => {
-        if (parseInt(n, 10) !== imgs.length) {
-          console.log('count and imgs not match', side, category, model);
-          console.log(n, imgs.length);
+      index[side][category].forEach((entry) => {
+        const imgs = [];
+        statuses.forEach((s) => {
+          if (entry[s]) imgs.push(...entry[s]);
+        });
+        if (parseInt(entry.n, 10) !== imgs.length) {
+          console.log('count and imgs not match', side, category, entry.model);
+          console.log(entry.n, imgs.length);
         }
       });
     });

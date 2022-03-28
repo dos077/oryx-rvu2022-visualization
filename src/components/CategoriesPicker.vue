@@ -4,6 +4,17 @@
       Category
     </v-expansion-panel-header>
     <v-expansion-panel-content>
+      <v-chip-group column>
+        <v-chip
+          v-for="status in statusOptions"
+          :key="status"
+          class="blue lighten-2"
+          :outlined="!statuses.includes(status)"
+          @click="toggleStatus(status)"
+        >
+          {{ status }}
+        </v-chip>
+      </v-chip-group>
       <v-btn @click="removeAll" icon color="red">
         <v-icon>mdi-close</v-icon>
       </v-btn>
@@ -33,9 +44,10 @@ export default {
   name: 'CategoriesPicker',
   data: () => ({
     categoryOptions: getCategories(),
+    statusOptions: ['destroyed', 'damaged', 'captured', 'abandoned'],
   }),
   computed: {
-    ...mapState(['categories']),
+    ...mapState(['categories', 'statuses']),
   },
   methods: {
     toggleCategory(category) {
@@ -56,6 +68,14 @@ export default {
       this.categoryOptions.forEach((c) => {
         this.$store.commit('addCategory', c);
       });
+      this.$store.commit('updateEntries');
+    },
+    toggleStatus(status) {
+      if (this.statuses.includes(status)) {
+        this.$store.commit('removeStatus', status);
+      } else {
+        this.$store.commit('addStatus', status);
+      }
       this.$store.commit('updateEntries');
     },
   },

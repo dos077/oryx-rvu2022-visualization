@@ -3,15 +3,24 @@ const twitterTimeJson = require('../oryxdata/twitterTime.json');
 const ocrDatesJson = require('../oryxdata/ocrDates.json');
 const noDatesJson = require('../oryxdata/noDates.json');
 
+const statuses = ['destroyed', 'damaged', 'captured', 'abandoned'];
+
 const loadIndex = (json) => {
   const sides = ['Russia', 'Ukraine'];
   const arr = [];
   sides.forEach((side) => {
     Object.keys(json[side]).forEach((category) => {
-      json[side][category].forEach(({ model, imgs }) => {
-        imgs.forEach((url) => arr.push({
-          side, category, model, url,
-        }));
+      json[side][category].forEach((entry) => {
+        const { model } = entry;
+        statuses.forEach((status) => {
+          if (entry[status]) {
+            entry[status].forEach((url) => {
+              arr.push({
+                side, category, model, url, status,
+              });
+            });
+          }
+        });
       });
     });
   });

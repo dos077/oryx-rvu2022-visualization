@@ -9,6 +9,8 @@ const oryxIndex = JSON.parse(fs.readFileSync('./src/oryxdata/index.json'));
 const twitterPath = './src/oryxdata/twitterTime.json';
 const postImgPath = './src/oryxdata/postImgFiles.json';
 
+const statuses = ['destroyed', 'damaged', 'captured', 'abandoned'];
+
 const saveTwitterDb = (db) => {
   fs.writeFileSync(twitterPath, JSON.stringify(db));
 };
@@ -22,7 +24,11 @@ const findTwitterTime = async () => {
   const urls = [];
   ['Russia', 'Ukraine'].forEach((side) => {
     Object.keys(oryxIndex[side]).forEach((category) => {
-      oryxIndex[side][category].forEach(({ imgs }) => {
+      oryxIndex[side][category].forEach((entry) => {
+        const imgs = [];
+        statuses.forEach((status) => {
+          if (entry[status]) imgs.push(...entry[status]);
+        });
         imgs.forEach((url) => {
           if (url.includes(twitterBase) && !urls.includes(url)) urls.push(url);
         });
@@ -97,9 +103,15 @@ const downloadPostimg = async () => {
   const urls = [];
   ['Russia', 'Ukraine'].forEach((side) => {
     Object.keys(oryxIndex[side]).forEach((category) => {
-      oryxIndex[side][category].forEach(({ imgs }) => {
+      oryxIndex[side][category].forEach((entry) => {
+        const imgs = [];
+        statuses.forEach((status) => {
+          if (entry[status]) imgs.push(...entry[status]);
+        });
         imgs.forEach((url) => {
-          if (url.includes(postimgBase) && !urls.some((entry) => entry.url === url)) urls.push({ side, category, url });
+          if (url.includes(postimgBase) && !urls.some((e) => e.url === url)) {
+            urls.push({ side, category, url });
+          }
         });
       });
     });

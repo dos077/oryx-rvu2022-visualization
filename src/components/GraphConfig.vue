@@ -87,7 +87,8 @@ export default {
   },
   methods: {
     updateRange(val) {
-      this.$store.commit('setDateRange', val);
+      const dates = val.sort((a, b) => new Date(a) - new Date(b));
+      this.$store.commit('setDateRange', dates);
     },
   },
 };

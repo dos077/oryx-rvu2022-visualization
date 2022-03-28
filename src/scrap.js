@@ -73,17 +73,20 @@ const scrap = async (page) => {
       if (model.toLowerCase().includes('unknown')) {
         model = `${category}(unknown)`;
       } else if (model.match(/\d+mm$/)) model += `_${mrr[3]}`;
-      const imgs = [];
+      const entry = { n, model };
       const arr = await li.$$('a');
       let count = 1;
       for (let k = 0; k < arr.length; k += 1) {
         const link = await arr[k].evaluate(({ textContent, href }) => ({ textContent: textContent.replace('Bayraktar TB2', ''), href }));
+        let status = ['destroyed', 'damaged', 'captured', 'abandoned'].find((s) => link.textContent.includes(s));
+        if (!status) status = 'destroyed';
+        if (!entry[status]) entry[status] = [];
         while (link.textContent.includes(`${count},`) || link.textContent.includes(`${count} `)) {
           count += 1;
-          imgs.push(link.href);
+          entry[status].push(link.href);
         }
       }
-      db[side][category].push({ n, model, imgs });
+      db[side][category].push(entry);
     }
     ulIndex += 1;
   }

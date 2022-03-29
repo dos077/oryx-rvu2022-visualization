@@ -19,7 +19,12 @@
           patreon.com
         </a>
       </p>
-      <p>Readme coming soon...</p>
+      <p>
+        Source code:
+        <a href="https://github.com/dos077/oryx-rvu2022-visualization" class="mx-2">
+          github
+        </a>
+      </p>
       <p>
         A few presets for quick breakdowns according to military bracnhes
       </p>

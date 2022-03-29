@@ -41,11 +41,17 @@ export default new Vuex.Store({
     removeModel(state, toRemove) {
       state.models = state.models.filter((model) => model !== toRemove);
     },
+    clearModels(state) {
+      state.models = [];
+    },
     addStatus(state, toAdd) {
       if (!state.statuses.includes(toAdd)) state.statuses.push(toAdd);
     },
     removeStatus(state, toRemove) {
       state.statuses = state.statuses.filter((status) => status !== toRemove);
+    },
+    clearStatus(state) {
+      state.statuses = [];
     },
     updateEntries(state) {
       const entries = [];
@@ -71,10 +77,13 @@ export default new Vuex.Store({
       state.countMethod = val;
     },
     setSmaPeriod(state, val) {
-      state.smaPeriod = val;
+      state.smaPeriod = parseInt(val, 10);
     },
     setDateRange(state, val) {
       state.dateRange = val;
+    },
+    resetDateRange(state) {
+      state.dateRange = ['2022-02-24', (new Date(updated)).toISOString().substr(0, 10)];
     },
   },
   actions: {

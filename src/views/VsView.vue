@@ -3,7 +3,7 @@
     <template v-slot:secondary>
       <main-card
         title="Russian Invasion of Ukraine 2022"
-        titleColor="grey lighten-2"
+        titleColor=""
         style="min-width: 100%;"
         class="my-4" :noNav="true"
       >

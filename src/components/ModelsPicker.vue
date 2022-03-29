@@ -28,7 +28,7 @@ import { mapState } from 'vuex';
 import { getModels } from '../data/oryxDb';
 
 export default {
-  name: 'CategoriesPicker',
+  name: 'ModelsPicker',
   data: () => ({
   }),
   computed: {

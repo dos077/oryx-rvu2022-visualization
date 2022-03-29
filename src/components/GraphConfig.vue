@@ -5,7 +5,7 @@
       <v-row>
         <v-col>
           <p class="mr-4">Losses Count</p>
-          <v-btn-toggle mandatory color="blue">
+          <v-btn-toggle color="blue" :value="countToggle">
             <v-btn small
               @click="$store.commit('setCountMethod', 'daily')"
             >
@@ -20,7 +20,7 @@
         </v-col>
         <v-col>
           <p class="mr-4">Moving Average</p>
-          <v-btn-toggle mandatory color="yellow darken-3">
+          <v-btn-toggle mandatory color="yellow darken-3" :value="smaToggle">
             <v-btn small
               @click="$store.commit('setSmaPeriod', 3)"
             >
@@ -41,12 +41,14 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-text-field
-                v-model="dateRangeText"
+                :value="dateRangeText"
                 label="Date Range"
                 prepend-icon="mdi-calendar"
                 readonly
                 v-bind="attrs"
                 v-on="on"
+                append-icon="mdi-restore"
+                @click:append="resetRange"
               ></v-text-field>
             </template>
             <v-date-picker
@@ -80,9 +82,37 @@ export default {
     dateMenu: false,
   }),
   computed: {
-    ...mapState(['dateRange']),
+    ...mapState(['dateRange', 'countMethod', 'smaPeriod']),
     dateRangeText() {
       return `${this.dateRange[0]} ~ ${this.dateRange[1]}`;
+    },
+    countToggle() {
+      if (this.countMethod === 'daily') return 0;
+      return 1;
+    },
+    smaToggle() {
+      if (this.smaPeriod === 3) return 0;
+      return 1;
+    },
+  },
+  watch: {
+    countMethod(to) {
+      const url = new URL(window.location);
+      if (to === 'daily') {
+        url.searchParams.delete('count');
+      } else {
+        url.searchParams.set('count', to);
+      }
+      window.history.replaceState({}, '', url);
+    },
+    smaPeriod(to) {
+      const url = new URL(window.location);
+      if (to === 3) {
+        url.searchParams.delete('sma');
+      } else {
+        url.searchParams.set('sma', to);
+      }
+      window.history.replaceState({}, '', url);
     },
   },
   methods: {
@@ -90,6 +120,26 @@ export default {
       const dates = val.sort((a, b) => new Date(a) - new Date(b));
       this.$store.commit('setDateRange', dates);
     },
+    resetRange() {
+      this.$store.commit('resetDateRange');
+    },
+  },
+  mounted() {
+    if (this.$route.query) {
+      const { query } = this.$route;
+      let change = false;
+      if (query.count) {
+        change = true;
+        this.$store.commit('setCountMethod', query.count);
+      }
+      if (query.sma) {
+        change = true;
+        this.$store.commit('setSmaPeriod', query.sma);
+      }
+      if (change) {
+        this.$store.commit('updateEntries');
+      }
+    }
   },
 };
 </script>

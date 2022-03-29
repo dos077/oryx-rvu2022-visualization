@@ -49,6 +49,26 @@ export default {
   computed: {
     ...mapState(['categories', 'statuses']),
   },
+  watch: {
+    categories(to) {
+      const url = new URL(window.location);
+      if (to.length < this.categoryOptions.length) {
+        url.searchParams.set('categories', to.join('~'));
+      } else {
+        url.searchParams.delete('categories');
+      }
+      window.history.replaceState({}, '', url);
+    },
+    statuses(to) {
+      const url = new URL(window.location);
+      if (to.length < 4) {
+        url.searchParams.set('statuses', to.join('~'));
+      } else {
+        url.searchParams.delete('statuses');
+      }
+      window.history.replaceState({}, '', url);
+    },
+  },
   methods: {
     toggleCategory(category) {
       if (this.categories.includes(category)) {
@@ -78,6 +98,33 @@ export default {
       }
       this.$store.commit('updateEntries');
     },
+  },
+  mounted() {
+    if (this.$route.query) {
+      const { query } = this.$route;
+      let change = false;
+      if (query.categories) {
+        change = true;
+        const categories = query.categories.split('~').map((c) => c.trim());
+        this.$store.commit('clearCategory');
+        categories.forEach((cat) => {
+          if (this.categoryOptions.includes(cat)) this.$store.commit('addCategory', cat);
+        });
+      }
+      if (query.statuses) {
+        change = true;
+        const statuses = query
+          .statuses.split('~')
+          .map((s) => s.trim());
+        this.$store.commit('clearStatus');
+        statuses.forEach((status) => {
+          if (this.statusOptions.includes(status)) this.$store.commit('addStatus', status);
+        });
+      }
+      if (change) {
+        this.$store.commit('updateEntries');
+      }
+    }
   },
 };
 </script>

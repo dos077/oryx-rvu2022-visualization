@@ -13,7 +13,7 @@ const sma = (data, t) => {
   return avgs;
 };
 
-const buildVsData = (entries, isTotal, smaPeriod) => {
+const buildVsData = (entries, isTotal, smaPeriod, dateRange) => {
   const dates = [];
   ['Russia', 'Ukraine'].forEach((side) => {
     Object.keys(entries[side]).forEach((date) => {
@@ -39,15 +39,44 @@ const buildVsData = (entries, isTotal, smaPeriod) => {
     }
     russia.push(rusVal);
     ukraine.push(ukrVal);
-    labels.push(date.split('-').slice(1).join('-'));
+    labels.push(date);
   });
+  const sliceIndice = [0, dates.length];
+  if (dateRange && dateRange.length === 2) {
+    const minDate = new Date(dateRange[0]);
+    sliceIndice[0] = dates
+      .findIndex((date) => new Date(date) >= minDate);
+    if (sliceIndice[0] === -1) {
+      sliceIndice[0] = dates.length;
+    } else {
+      const maxDate = new Date(dateRange[1]);
+      maxDate.setDate(maxDate.getDate() + 1);
+      sliceIndice[1] = dates
+        .findIndex((date) => new Date(date) >= maxDate);
+      if (sliceIndice[1] === -1) {
+        sliceIndice[1] = dates.length;
+      } else {
+        sliceIndice[1] += 1;
+      }
+    }
+  }
   return {
-    labels,
-    russia,
-    ukraine,
-    rusSma: sma(russia, smaPeriod),
-    ukrSma: sma(ukraine, smaPeriod),
+    labels: labels.slice(...sliceIndice),
+    russia: russia.slice(...sliceIndice),
+    ukraine: ukraine.slice(...sliceIndice),
+    rusSma: sma(russia, smaPeriod).slice(...sliceIndice),
+    ukrSma: sma(ukraine, smaPeriod).slice(...sliceIndice),
   };
 };
 
-export { buildVsData };
+const breakDownEntries = (entries, key) => {
+  const breakdown = {};
+  entries.forEach((e) => {
+    const val = e[key];
+    if (!breakdown[val]) breakdown[val] = [];
+    breakdown[val].push(e);
+  });
+  return breakdown;
+};
+
+export { buildVsData, breakDownEntries };

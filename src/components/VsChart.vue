@@ -1,5 +1,10 @@
 <template>
-  <main-card title="Chart" :noNav="true" titleColor="" style="min-width: 100%;">
+  <main-card
+    :title="dynamicTitle"
+    :noNav="true"
+    titleColor="grey"
+    style="min-width: 100%;"
+  >
     <v-card-text>
       <canvas id="vsChart"></canvas>
     </v-card-text>
@@ -16,8 +21,8 @@
 import Chart from 'chart.js/auto';
 import { mapState } from 'vuex';
 import MainCard from './MainCard.vue';
-import { mapSideDates, updated } from '../data/oryxDb';
-import { buildVsData } from '../data/chartData';
+import { mapSideDates, updated, getCategories } from '../data/oryxDb';
+import { buildVsData, breakDownEntries } from '../data/chartData';
 
 export default {
   name: 'VsChart',
@@ -27,22 +32,15 @@ export default {
     updated: new Date(updated),
   }),
   computed: {
-    ...mapState(['entries', 'countMethod', 'smaPeriod', 'dateRange']),
+    ...mapState(['categories', 'entries', 'countMethod', 'smaPeriod', 'dateRange']),
     isTotal() {
       return this.countMethod === 'total';
     },
     chartData() {
-      const minDate = new Date(this.dateRange[0]);
-      const maxDate = new Date(this.dateRange[1]);
-      maxDate.setDate(maxDate.getDate() + 1);
-      const entries = this.entries.filter(({ date }) => {
-        const time = new Date(date);
-        return time >= minDate && time <= maxDate;
-      });
-      const mapped = mapSideDates(entries);
+      const mapped = mapSideDates(this.entries);
       const {
         labels, russia, ukraine, rusSma, ukrSma,
-      } = buildVsData(mapped, this.isTotal, this.smaPeriod);
+      } = buildVsData(mapped, this.isTotal, this.smaPeriod, this.dateRange);
       const datasets = [];
       if (!this.isTotal) {
         datasets.push(
@@ -84,13 +82,31 @@ export default {
           tension: 0.4,
         },
       );
-      return { labels, datasets };
+      return {
+        labels: labels.map((l) => l.split('-').slice(1).join('-')),
+        datasets,
+      };
     },
     updateTime() {
       const ts = this.updated;
       const date = `${ts.getFullYear()}-${ts.getMonth() + 1}-${ts.getDate()}`;
       const hr = `${ts.getHours()}:${ts.getMinutes()}`;
       return `${date} ${hr}`;
+    },
+    dynamicTitle() {
+      const { categories, entries } = this;
+      if (!categories || categories.length === 0) return 'No Data';
+      if (categories.length === getCategories().length) return 'All Equipment Losses';
+      const breakdown = breakDownEntries(entries, 'category');
+      let title = '';
+      const catArr = Object.keys(breakdown);
+      catArr
+        .sort((a, b) => breakdown[b].length - breakdown[a].length)
+        .slice(0, 3)
+        .forEach((name) => { title += `${name}/`; });
+      return catArr.length > 3
+        ? `${title}etc.`
+        : title.slice(0, title.length - 1);
     },
     isDesktop() { return this.$vuetify.breakpoint.mdAndUp; },
   },

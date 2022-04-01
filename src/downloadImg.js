@@ -147,7 +147,7 @@ const downloadPostimg = async () => {
 };
 
 const main = async () => {
-  await findTwitterTime();
+  // await findTwitterTime();
   await downloadPostimg();
 };
 

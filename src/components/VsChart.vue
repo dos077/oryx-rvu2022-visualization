@@ -29,6 +29,7 @@ export default {
   components: { MainCard },
   data: () => ({
     chart: null,
+    breakdownChart: null,
     updated: new Date(updated),
   }),
   computed: {
@@ -124,6 +125,16 @@ export default {
       type: 'line',
       data: this.chartData,
     });
+    /* const ctxb = document.getElementById('breakdownChart');
+    this.breakdownChart = new Chart(ctxb, {
+      type: 'line',
+      data: this.breakdownData,
+      options: {
+        scales: {
+          y: { stacked: true },
+        },
+      },
+    }); */
     if (!this.isDesktop) {
       const maxDate = this.dateRange[1];
       const minTs = new Date(maxDate) - (14 * 24 * 3600 * 1000);

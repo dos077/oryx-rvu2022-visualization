@@ -15,6 +15,9 @@ export default new Vuex.Store({
     countMethod: 'daily',
     smaPeriod: 3,
     dateRange: ['2022-02-24', (new Date(updated)).toISOString().substr(0, 10)],
+    breakdownSide: null,
+    breakdownKey: 'status',
+    breakdownPercent: false,
   },
   mutations: {
     addCategory(state, toAdd) {
@@ -84,6 +87,15 @@ export default new Vuex.Store({
     },
     resetDateRange(state) {
       state.dateRange = ['2022-02-24', (new Date(updated)).toISOString().substr(0, 10)];
+    },
+    setBreakdownSide(state, val) {
+      state.breakdownSide = val;
+    },
+    setBreakdownKey(state, val) {
+      state.breakdownKey = val;
+    },
+    setBreakdownPercent(state, val) {
+      state.breakdownPercent = val;
     },
   },
   actions: {

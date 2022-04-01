@@ -29,10 +29,10 @@
         A few presets for quick breakdowns according to military bracnhes
       </p>
       <p>
-        <v-btn @click="armourPreset" class="mx-2">Armours</v-btn>
-        <v-btn @click="artilleryPreset" class="mx-2">Artilleries</v-btn>
-        <v-btn @click="airPreset" class="mx-2">Air & Anti-Air</v-btn>
-        <v-btn @click="logiPreset" class="mx-2">Logistics</v-btn>
+        <v-btn @click="armourPreset" class="ma-2">Armours</v-btn>
+        <v-btn @click="artilleryPreset" class="ma-2">Artilleries</v-btn>
+        <v-btn @click="airPreset" class="mxa-2">Air & Anti-Air</v-btn>
+        <v-btn @click="logiPreset" class="ma-2">Logistics</v-btn>
       </p>
     </v-expansion-panel-content>
   </v-expansion-panel>

@@ -46,7 +46,7 @@
         </v-col>
         <v-col cols="auto" v-if="breakdownSide">
           <span class="mr-4">Normalize Data</span>
-          <v-btn-toggle color="yellow" :value="breakdownPercent ? 1 : 0">
+          <v-btn-toggle color="yellow darken-2" :value="breakdownPercent ? 1 : 0">
             <v-btn
               @click="$store.commit('setBreakdownPercent', false)"
             >

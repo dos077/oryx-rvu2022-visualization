@@ -5,7 +5,7 @@
         title="Russian Invasion of Ukraine 2022"
         titleColor="grey"
         style="min-width: 100%;"
-        class="my-4" :noNav="true"
+        :my-4="isDesktop" :noNav="true"
       >
         <template v-slot:tool-title>
           <v-select

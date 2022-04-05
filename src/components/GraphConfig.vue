@@ -31,6 +31,11 @@
             >
               7
             </v-btn>
+            <v-btn
+              @click="$store.commit('setSmaPeriod', 14)"
+            >
+              14
+            </v-btn>
           </v-btn-toggle>
         </v-col>
         <v-col cols="auto" v-if="breakdownSide">
@@ -119,6 +124,7 @@ export default {
     },
     smaToggle() {
       if (this.smaPeriod === 3) return 0;
+      if (this.smaPeriod === 14) return 2;
       return 1;
     },
     keyToggle() {
@@ -138,7 +144,7 @@ export default {
     },
     smaPeriod(to) {
       const url = new URL(window.location);
-      if (to === 3) {
+      if (to === 7) {
         url.searchParams.delete('sma');
       } else {
         url.searchParams.set('sma', to);

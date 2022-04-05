@@ -24,7 +24,6 @@ const findSliceIndice = (dates, dateRange) => {
       sliceIndice[0] = dates.length;
     } else {
       const maxDate = new Date(dateRange[1]);
-      maxDate.setDate(maxDate.getDate() + 1);
       sliceIndice[1] = dates
         .findIndex((date) => new Date(date) >= maxDate);
       if (sliceIndice[1] === -1) {
@@ -35,6 +34,32 @@ const findSliceIndice = (dates, dateRange) => {
     }
   }
   return sliceIndice;
+};
+
+const buildVsEntry = (data, label, isTotal) => {
+  const dataset = {
+    label,
+    data,
+    type: 'line',
+    cubicInterpolationMode: 'monotone',
+    tension: 0.4,
+  };
+  if (label === 'Russia') {
+    dataset.borderColor = '#db0d20';
+    dataset.backgroundColor = '#db0d20';
+    if (!isTotal) dataset.type = 'bar';
+  } else if (label === 'Ukraine') {
+    dataset.borderColor = '#005BBB';
+    dataset.backgroundColor = '#005BBB';
+    if (!isTotal) dataset.type = 'bar';
+  } else if (label === 'Rus-SMA') {
+    dataset.borderColor = '#f99fa8';
+    dataset.borderDash = [5, 5];
+  } else {
+    dataset.borderColor = '#66b0ff';
+    dataset.borderDash = [5, 5];
+  }
+  return dataset;
 };
 
 const buildVsData = (entries, isTotal, smaPeriod, dateRange) => {
@@ -66,12 +91,24 @@ const buildVsData = (entries, isTotal, smaPeriod, dateRange) => {
     labels.push(date);
   });
   const sliceIndice = findSliceIndice(dates, dateRange);
+  const datasets = [];
+  if (!isTotal) {
+    datasets.push(
+      buildVsEntry(sma(russia, smaPeriod).slice(...sliceIndice), 'Rus-SMA'),
+    );
+    datasets.push(
+      buildVsEntry(sma(ukraine, smaPeriod).slice(...sliceIndice), 'Ukr-SMA'),
+    );
+  }
+  datasets.push(
+    buildVsEntry(russia.slice(...sliceIndice), 'Russia', isTotal),
+  );
+  datasets.push(
+    buildVsEntry(ukraine.slice(...sliceIndice), 'Ukraine', isTotal),
+  );
   return {
-    labels: labels.slice(...sliceIndice),
-    russia: russia.slice(...sliceIndice),
-    ukraine: ukraine.slice(...sliceIndice),
-    rusSma: sma(russia, smaPeriod).slice(...sliceIndice),
-    ukrSma: sma(ukraine, smaPeriod).slice(...sliceIndice),
+    labels: labels.slice(...sliceIndice).map((d) => d.split('-').slice(1).join('-')),
+    datasets,
   };
 };
 
@@ -94,11 +131,11 @@ const findDates = (entries) => {
   return dates;
 };
 
-const buildDateDataset = (entries, dates, label, color) => {
+const buildDateDataset = (entries, dates, label, color, isTotal = true) => {
   const data = [];
   dates.forEach((date, i) => {
     let total = 0;
-    if (i > 0) total += data[i - 1];
+    if (i > 0 && isTotal) total += data[i - 1];
     const dateEntries = entries.filter((e) => e.date === date);
     if (dateEntries) total += dateEntries.length;
     data.push(total);
@@ -111,6 +148,7 @@ const buildDateDataset = (entries, dates, label, color) => {
     fill: true,
     cubicInterpolationMode: 'monotone',
     tension: 0.4,
+    type: isTotal ? undefined : 'bar',
   };
 };
 
@@ -130,7 +168,7 @@ const rangeDates = (dates, dateRange) => {
   return dates.filter((d) => new Date(d) >= minDate && new Date(d) <= maxDate);
 };
 
-const buildTotalBreakdown = (entries, key, n, dateRange, isPercent) => {
+const buildBreakdownData = (entries, key, n, dateRange, isPercent, isTotal) => {
   const dates = rangeDates(findDates(entries), dateRange);
   const breakdown = breakDownEntries(entries, key);
   const datasets = [];
@@ -142,11 +180,11 @@ const buildTotalBreakdown = (entries, key, n, dateRange, isPercent) => {
       keyVals.pop();
     }
     keyEntries.push(...entries.filter((e) => !keyVals.includes(e[key])));
-    const dataset = buildDateDataset(keyEntries, dates, 'others', colors[n]);
+    const dataset = buildDateDataset(keyEntries, dates, 'others', colors[n], isTotal);
     datasets.push(dataset);
   }
   keyVals.forEach((keyVal, i) => {
-    const dataset = buildDateDataset(breakdown[keyVal], dates, keyVal, colors[i]);
+    const dataset = buildDateDataset(breakdown[keyVal], dates, keyVal, colors[i], isTotal);
     datasets.push(dataset);
   });
   if (isPercent) {
@@ -172,4 +210,4 @@ const buildTotalBreakdown = (entries, key, n, dateRange, isPercent) => {
   };
 };
 
-export { buildVsData, breakDownEntries, buildTotalBreakdown };
+export { buildVsData, breakDownEntries, buildBreakdownData };

@@ -3,33 +3,11 @@
     <template v-slot:controls>
       <control-panel />
     </template>
-    <template v-slot:secondary>
-      <main-card
-        title="Russian Invasion of Ukraine 2022"
-        titleColor="grey"
-        style="min-width: 100%;"
-        :my-4="isDesktop" :noNav="true"
-      >
-        <template v-slot:tool-title>
-          <v-select
-            :value="breakdownSide"
-            :items="breakdownOptions"
-            label="Russian Invasion of Ukraine 2022 - Equipment Losses"
-            style="margin-bottom: -24px; max-width: 25em;"
-            @input="setBreakdownSide"
-          />
-        </template>
-        <v-expansion-panels accordion multiple v-model="openPanels">
-          <info-panel />
-          <categories-picker />
-          <models-picker />
-          <graph-config />
-        </v-expansion-panels>
-      </main-card>
-    </template>
     <template>
-      <vs-chart v-if="!breakdownSide" />
-      <breakdown-chart v-else />
+      <combo-chart />
+    </template>
+    <template v-slot:secondary>
+      <quick-sets />
     </template>
   </main-container>
 </template>
@@ -37,27 +15,17 @@
 <script>
 import { mapState } from 'vuex';
 import MainContainer from '../components/MainContainer.vue';
-import MainCard from '../components/MainCard.vue';
-import CategoriesPicker from '../components/CategoriesPicker.vue';
-import ModelsPicker from '../components/ModelsPicker.vue';
-import GraphConfig from '../components/GraphConfig.vue';
-import InfoPanel from '../components/InfoPanel.vue';
-import VsChart from '../components/VsChart.vue';
-import BreakdownChart from '../components/BreakdownChart.vue';
+import ComboChart from '../components/ComboChart.vue';
 import ControlPanel from '../components/ControlPanel.vue';
+import QuickSets from '../components/QuickSets.vue';
 
 export default {
   name: 'VsView',
   components: {
     MainContainer,
-    MainCard,
-    CategoriesPicker,
-    ModelsPicker,
-    GraphConfig,
-    InfoPanel,
-    VsChart,
-    BreakdownChart,
+    ComboChart,
     ControlPanel,
+    QuickSets,
   },
   data: () => ({
     openPanels: [0],

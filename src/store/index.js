@@ -13,11 +13,13 @@ export default new Vuex.Store({
     models: getModels(),
     entries: [...oryxDb],
     countMethod: 'daily',
-    smaPeriod: 3,
+    smaPeriod: 7,
     dateRange: ['2022-02-24', (new Date(updated)).toISOString().substr(0, 10)],
     breakdownSide: null,
     breakdownKey: 'status',
     breakdownPercent: false,
+    darkMode: (new Date()).getHours() < 7 || (new Date()).getHours() > 18,
+    infoOn: false,
   },
   mutations: {
     addCategory(state, toAdd) {
@@ -86,7 +88,7 @@ export default new Vuex.Store({
       state.dateRange = val;
     },
     resetDateRange(state) {
-      state.dateRange = ['2022-02-24', (new Date(updated)).toISOString().substr(0, 10)];
+      state.dateRange = ['2022-02-24', (new Date(updated)).toISOString().slice(0, 10)];
     },
     setBreakdownSide(state, val) {
       state.breakdownSide = val;
@@ -96,6 +98,12 @@ export default new Vuex.Store({
     },
     setBreakdownPercent(state, val) {
       state.breakdownPercent = val;
+    },
+    toggleDarkMode(state) {
+      state.darkMode = !state.darkMode;
+    },
+    toggleInfo(state) {
+      state.infoOn = !state.infoOn;
     },
   },
   actions: {

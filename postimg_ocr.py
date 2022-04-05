@@ -69,14 +69,32 @@ def first_pass(image_path):
     height, width, _ = image.shape
     for x in range(height):
       for y in range(width):
+        if image[x, y].sum() < th:
+          image[x, y] = [255, 255, 255]
+        else:
+          image[x, y] = [0, 0 ,0]
+    match = search_date(image)
+    if match: break
+    image = cv2.imread(image_path)
+    for x in range(height):
+      for y in range(width):
+        if image[x, y].sum() > 765 - th:
+          image[x, y] = [255, 255, 255]
+        else:
+          image[x, y] = [0, 0 ,0]
+    match = search_date(image)
+    if match: break
+    image = cv2.imread(image_path)
+    for x in range(height):
+      for y in range(width):
         if image[x, y].sum() < th or image[x, y].sum() > 765 - th:
           image[x, y] = [255, 255, 255]
         else:
           image[x, y] = [0, 0 ,0]
     match = search_date(image)
     if match: break
-    else: match = second_pass(image)
-    if match: break
+    # else: match = second_pass(image)
+    # if match: break
   return match
 
 for i in range(len(index)):

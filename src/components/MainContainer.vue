@@ -2,9 +2,12 @@
   <v-container :fluid="!isDesktop"
     :pa-0="!isDesktop" :my-4="isDesktop">
     <v-row :no-gutters="!isDesktop">
-      <slot></slot>
+      <slot name="controls"></slot>
     </v-row>
     <v-row :no-gutters="!isDesktop">
+      <slot></slot>
+    </v-row>
+    <v-row>
       <slot name="secondary"></slot>
     </v-row>
   </v-container>

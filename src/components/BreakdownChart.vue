@@ -5,6 +5,11 @@
     titleColor="grey"
     style="min-width: 100%;"
   >
+    <template v-slot:tool-actions>
+      <v-btn icon @click="$store.commit('toggleDarkMode')">
+        <v-icon>mdi-brightness-6</v-icon>
+      </v-btn>
+    </template>
     <v-card-text>
       <canvas id="breakdownChart"></canvas>
     </v-card-text>
@@ -32,7 +37,7 @@ export default {
     updated: new Date(updated),
   }),
   computed: {
-    ...mapState(['entries', 'dateRange', 'breakdownSide', 'breakdownKey', 'breakdownPercent']),
+    ...mapState(['entries', 'dateRange', 'breakdownSide', 'breakdownKey', 'breakdownPercent', 'darkMode']),
     chartData() {
       const entries = this.entries.filter(({ side }) => side === this.breakdownSide);
       return buildTotalBreakdown(
@@ -69,12 +74,33 @@ export default {
       }
       this.chart.update();
     },
+    darkMode(to) {
+      this.chart.options.plugins.legend.labels.color = to ? '#eee' : undefined;
+      this.chart.options.scales.x.ticks.color = to ? '#eee' : undefined;
+      this.chart.options.scales.x.grid.color = to ? '#444' : undefined;
+      this.chart.options.scales.y.ticks.color = to ? '#eee' : undefined;
+      this.chart.options.scales.y.grid.color = to ? '#444' : undefined;
+      this.chart.update();
+    },
   },
   mounted() {
     const ctx = document.getElementById('breakdownChart');
     const options = {
+      plugins: {
+        legend: {
+          labels: { color: this.darkMode ? '#eee' : undefined },
+        },
+      },
       scales: {
-        y: { stacked: true },
+        x: {
+          ticks: { color: this.darkMode ? '#eee' : undefined },
+          grid: { color: this.darkMode ? '#444' : undefined },
+        },
+        y: {
+          stacked: true,
+          ticks: { color: this.darkMode ? '#eee' : undefined },
+          grid: { color: this.darkMode ? '#444' : undefined },
+        },
       },
     };
     if (this.breakdownPercent) {

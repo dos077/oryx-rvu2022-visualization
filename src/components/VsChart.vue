@@ -33,15 +33,16 @@ export default {
     updated: new Date(updated),
   }),
   computed: {
-    ...mapState(['categories', 'entries', 'countMethod', 'smaPeriod', 'dateRange']),
+    ...mapState(['categories', 'entries', 'countMethod', 'smaPeriod', 'dateRange', 'darkMode']),
     isTotal() {
       return this.countMethod === 'total';
     },
     chartData() {
       const mapped = mapSideDates(this.entries);
       const {
-        labels, russia, ukraine, rusSma, ukrSma,
+        labels, datasets,
       } = buildVsData(mapped, this.isTotal, this.smaPeriod, this.dateRange);
+      /*
       const datasets = [];
       if (!this.isTotal) {
         datasets.push(
@@ -82,10 +83,27 @@ export default {
           cubicInterpolationMode: 'monotone',
           tension: 0.4,
         },
-      );
+      ); */
       return {
-        labels: labels.map((l) => l.split('-').slice(1).join('-')),
+        labels,
         datasets,
+        options: {
+          plugins: {
+            legend: {
+              labels: { color: this.darkMode ? '#eee' : undefined },
+            },
+          },
+          scales: {
+            x: {
+              ticks: { color: this.darkMode ? '#eee' : undefined },
+              grid: { color: this.darkMode ? '#444' : undefined },
+            },
+            y: {
+              ticks: { color: this.darkMode ? '#eee' : undefined },
+              grid: { color: this.darkMode ? '#444' : undefined },
+            },
+          },
+        },
       };
     },
     updateTime() {
@@ -117,6 +135,14 @@ export default {
         this.chart.data = newData;
         this.chart.update();
       },
+    },
+    darkMode(to) {
+      this.chart.options.plugins.legend.labels.color = to ? '#eee' : undefined;
+      this.chart.options.scales.x.ticks.color = to ? '#eee' : undefined;
+      this.chart.options.scales.x.grid.color = to ? '#444' : undefined;
+      this.chart.options.scales.y.ticks.color = to ? '#eee' : undefined;
+      this.chart.options.scales.y.grid.color = to ? '#444' : undefined;
+      this.chart.update();
     },
   },
   mounted() {

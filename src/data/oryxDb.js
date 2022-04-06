@@ -32,9 +32,14 @@ const loadTime = (dateDb, lossDb) => {
   lossDb.forEach((entry) => {
     const dateEntry = dateDb.find((e) => entry.url === e.url);
     if (!dateEntry) return;
-    const drr = dateEntry.date.includes('.')
-      ? dateEntry.date.split('.')
-      : dateEntry.date.split('/');
+    let drr = null;
+    if (dateEntry.date.includes('.')) {
+      drr = dateEntry.date.split('.');
+    } else if (dateEntry.date.includes('/')) {
+      drr = dateEntry.date.split('/');
+    } else {
+      drr = dateEntry.date.split('-');
+    }
     drr[2] = '2022';
     arr.push({ ...entry, date: drr.map((n) => parseInt(n, 10)).reverse().join('-') });
   });

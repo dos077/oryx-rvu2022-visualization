@@ -38,6 +38,10 @@ const checkDate = ({ url, date }) => {
     const drr = date.split('/').reverse();
     if (drr[0] === '22') drr[0] = '2022';
     parsedDate = new Date(drr.join('-'));
+  } else if (date.toString().includes('-')) {
+    const drr = date.split('-').reverse();
+    if (drr[0] === '22') drr[0] = '2022';
+    parsedDate = new Date(drr.join('-'));
   }
   if (!parsedDate || !parsedDate.getDate() || parsedDate < startDate || parsedDate > today) {
     console.log('invalid date: ', url, date);

@@ -43,5 +43,7 @@ export default {
       return 0;
     },
   },
+  methods: {
+  },
 };
 </script>

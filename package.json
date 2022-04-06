@@ -12,6 +12,7 @@
     "validate": "node src/validate"
   },
   "dependencies": {
+    "@juggle/resize-observer": "^3.3.1",
     "chart.js": "^3.7.1",
     "core-js": "^3.8.3",
     "puppeteer": "^13.5.1",

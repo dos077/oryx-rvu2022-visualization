@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar app absolute hide-on-scroll>
+    <v-app-bar app absolute>
       <v-toolbar-title>
         2022 Russian invasion of Ukraine
       </v-toolbar-title>
@@ -33,3 +33,7 @@ export default {
   }),
 };
 </script>
+
+<style>
+html, body { overflow-x: hidden }
+</style>

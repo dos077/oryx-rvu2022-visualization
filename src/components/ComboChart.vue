@@ -178,11 +178,19 @@ export default {
         },
       ],
     });
-    if (!this.isDesktop) {
+    if (this.$vuetify.breakpoint.smAndDown) {
       const maxDate = this.dateRange[1];
       const minTs = new Date(maxDate) - (14 * 24 * 3600 * 1000);
       const minDate = (new Date(minTs)).toISOString().substring(0, 10);
       this.$store.commit('setDateRange', [minDate, maxDate]);
+    } else if (this.$vuetify.breakpoint.mdAndDown) {
+      const minDate = new Date(updated);
+      minDate.setMonth(minDate.getMonth() - 1);
+      const maxDate = new Date(updated);
+      this.$store.commit(
+        'setDateRange',
+        [minDate.toISOString().slice(0, 10), maxDate.toISOString().slice(0, 10)],
+      );
     }
   },
 };

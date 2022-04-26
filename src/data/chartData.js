@@ -62,14 +62,28 @@ const buildVsEntry = (data, label, isTotal) => {
   return dataset;
 };
 
-const buildVsData = (entries, isTotal, smaPeriod, dateRange) => {
+const getDates = (sortedDates) => {
+  console.log('sorting dates', sortedDates);
+  const minDate = new Date(sortedDates[0]);
+  const maxDate = new Date(sortedDates[sortedDates.length - 1]);
+  console.log(minDate, maxDate, minDate < maxDate);
   const dates = [];
+  for (let date = minDate; date < maxDate; date.setDate(date.getDate() + 1)) {
+    dates.push(date.toISOString().slice(0, 10));
+  }
+  console.log(dates);
+  return dates;
+};
+
+const buildVsData = (entries, isTotal, smaPeriod, dateRange) => {
+  const rawDates = [];
   ['Russia', 'Ukraine'].forEach((side) => {
     Object.keys(entries[side]).forEach((date) => {
-      if (!dates.includes(date)) dates.push(date);
+      if (!rawDates.includes(date)) rawDates.push(date);
     });
   });
-  dates.sort((a, b) => (new Date(a)) - (new Date(b)));
+  rawDates.sort((a, b) => (new Date(a)) - (new Date(b)));
+  const dates = getDates(rawDates);
   const russia = [];
   const ukraine = [];
   const labels = [];
@@ -169,7 +183,8 @@ const rangeDates = (dates, dateRange) => {
 };
 
 const buildBreakdownData = (entries, key, n, dateRange, isPercent, isTotal) => {
-  const dates = rangeDates(findDates(entries), dateRange);
+  const rawDates = rangeDates(findDates(entries), dateRange);
+  const dates = getDates(rawDates);
   const breakdown = breakDownEntries(entries, key);
   const datasets = [];
   const keyVals = Object.keys(breakdown).filter((val) => !val.includes('(unknown)'));

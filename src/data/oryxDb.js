@@ -41,7 +41,8 @@ const loadTime = (dateDb, lossDb) => {
       drr = dateEntry.date.split('-');
     }
     drr[2] = '2022';
-    arr.push({ ...entry, date: drr.map((n) => parseInt(n, 10)).reverse().join('-') });
+    const date = new Date(drr.reverse().join('-'));
+    arr.push({ ...entry, date: date.toISOString().slice(0, 10) });
   });
   return arr.filter((entry) => entry.date);
 };

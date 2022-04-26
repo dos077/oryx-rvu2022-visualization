@@ -4,7 +4,9 @@
 const puppeteer = require('puppeteer');
 const fs = require('fs');
 
-const url = 'https://www.oryxspioenkop.com/2022/02/attack-on-europe-documenting-equipment.html';
+const rusUrl = 'https://www.oryxspioenkop.com/2022/02/attack-on-europe-documenting-equipment.html';
+
+const ukrUrl = 'https://www.oryxspioenkop.com/2022/02/attack-on-europe-documenting-ukrainian.html';
 
 const sides = ['Russia', 'Ukraine'];
 const categories = [
@@ -50,19 +52,12 @@ const scrap = async (page) => {
   const h3s = await page.$$('div.post-body h3');
   const db = {};
   let ulIndex = 0;
-  let side = null;
-  for (let i = 0; i < h3s.length; i += 1) {
+  for (let i = 1; i < h3s.length; i += 1) {
     const txt = await h3s[i].evaluate((el) => el.textContent);
-    const switchSide = sides.find((sideStr) => txt.includes(sideStr));
-    if (switchSide) {
-      side = switchSide;
-      if (!db[side]) db[side] = {};
-      continue;
-    }
     const category = categories
       .find((catStr) => txt.toLowerCase().includes(catStr.toLocaleLowerCase()));
     if (!category) continue;
-    if (!db[side][category]) db[side][category] = [];
+    if (!db[category]) db[category] = [];
     const lis = await (await page.$$('div.post-body ul'))[ulIndex].$$('li');
     for (let j = 0; j < lis.length; j += 1) {
       const li = lis[j];
@@ -86,12 +81,11 @@ const scrap = async (page) => {
           entry[status].push(link.href);
         }
       }
-      db[side][category].push(entry);
+      db[category].push(entry);
     }
     ulIndex += 1;
   }
-
-  saveData(db);
+  return db;
 };
 
 const main = async () => {
@@ -100,8 +94,13 @@ const main = async () => {
   await page.setUserAgent(
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36',
   );
-  await page.goto(url);
-  await scrap(page);
+  const db = {};
+  await page.goto(rusUrl);
+  db[sides[0]] = await scrap(page);
+  await page.goto(ukrUrl);
+  db[sides[1]] = await scrap(page);
+
+  saveData(db);
 
   await browser.close();
 };
